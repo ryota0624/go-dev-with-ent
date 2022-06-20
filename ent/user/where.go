@@ -4,6 +4,7 @@ package user
 
 import (
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/ryota0624/go-dev-with-ent/ent/predicate"
 )
 
@@ -288,6 +289,34 @@ func NameEqualFold(v string) predicate.User {
 func NameContainsFold(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldName), v))
+	})
+}
+
+// HasCars applies the HasEdge predicate on the "cars" edge.
+func HasCars() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CarsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CarsTable, CarsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCarsWith applies the HasEdge predicate on the "cars" edge with a given conditions (other predicates).
+func HasCarsWith(preds ...predicate.Car) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CarsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CarsTable, CarsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 
