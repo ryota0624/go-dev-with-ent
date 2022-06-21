@@ -1,7 +1,9 @@
 package schema
 
 import (
+	"entgo.io/contrib/entproto"
 	"entgo.io/ent"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -14,8 +16,8 @@ type Car struct {
 // Fields of the Car.
 func (Car) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("model"),
-		field.Time("registered_at"),
+		field.String("model").Annotations(entproto.Field(2)),
+		field.Time("registered_at").Annotations(entproto.Field(3)),
 	}
 }
 
@@ -29,6 +31,12 @@ func (Car) Edges() []ent.Edge {
 			Ref("cars").
 			// setting the edge to unique, ensure
 			// that a car can have only one owner.
-			Unique(),
+			Unique().Annotations(entproto.Field(4)),
+	}
+}
+
+func (Car) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entproto.Message(),
 	}
 }

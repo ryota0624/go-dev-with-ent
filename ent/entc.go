@@ -9,6 +9,7 @@ import (
 
 	"ariga.io/ogent"
 	"entgo.io/contrib/entoas"
+	"entgo.io/contrib/entproto"
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
 	"github.com/hedwigz/entviz"
@@ -31,7 +32,11 @@ func main() {
 		log.Fatalf("creating ogent extension: %v", err)
 	}
 
-	err = entc.Generate("./schema", &gen.Config{}, entc.Extensions(entviz.Extension{}, ogent, oas))
+	err = entc.Generate("./schema", &gen.Config{
+		Hooks: []gen.Hook{
+			entproto.Hook(),
+		},
+	}, entc.Extensions(entviz.Extension{}, ogent, oas))
 	if err != nil {
 		log.Fatalf("running ent codegen: %v", err)
 	}

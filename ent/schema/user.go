@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/contrib/entoas"
+	"entgo.io/contrib/entproto"
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
@@ -17,18 +18,18 @@ type User struct {
 func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("age").
-			Positive(),
+			Positive().Annotations(entproto.Field(2)),
 		field.String("name").
-			Default("unknown"),
+			Default("unknown").Annotations(entproto.Field(3)),
 	}
 }
 
 // Edges of the User.
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("cars", Car.Type),
+		edge.To("cars", Car.Type).Annotations(entproto.Field(4)),
 		edge.From("groups", Group.Type).
-			Ref("users"),
+			Ref("users").Annotations(entproto.Skip()),
 	}
 }
 
@@ -38,5 +39,7 @@ func (User) Annotations() []schema.Annotation {
 		entoas.ListOperation(entoas.OperationPolicy(entoas.PolicyExpose)),
 		entoas.UpdateOperation(entoas.OperationPolicy(entoas.PolicyExpose)),
 		entoas.ReadOperation(entoas.OperationPolicy(entoas.PolicyExpose)),
+		entproto.Message(),
+		entproto.Service(),
 	}
 }
