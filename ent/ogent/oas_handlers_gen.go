@@ -70,6 +70,221 @@ var (
 	_ = codes.Unset
 )
 
+// HandleCreateUserRequest handles createUser operation.
+//
+// POST /users
+func (s *Server) handleCreateUserRequest(args [0]string, w http.ResponseWriter, r *http.Request) {
+	startTime := time.Now()
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("createUser"),
+	}
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "CreateUser",
+		trace.WithAttributes(otelAttrs...),
+		trace.WithSpanKind(trace.SpanKindServer),
+	)
+	s.requests.Add(ctx, 1, otelAttrs...)
+	defer span.End()
+	request, err := decodeCreateUserRequest(r, span)
+	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "BadRequest")
+		s.errors.Add(ctx, 1, otelAttrs...)
+		respondError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	response, err := s.h.CreateUser(ctx, request)
+	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "Internal")
+		s.errors.Add(ctx, 1, otelAttrs...)
+		respondError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := encodeCreateUserResponse(response, w, span); err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "Response")
+		s.errors.Add(ctx, 1, otelAttrs...)
+		return
+	}
+	span.SetStatus(codes.Ok, "Ok")
+	elapsedDuration := time.Since(startTime)
+	s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
+}
+
+// HandleHealthRequest handles health operation.
+//
+// GET /health
+func (s *Server) handleHealthRequest(args [0]string, w http.ResponseWriter, r *http.Request) {
+	startTime := time.Now()
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("health"),
+	}
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "Health",
+		trace.WithAttributes(otelAttrs...),
+		trace.WithSpanKind(trace.SpanKindServer),
+	)
+	s.requests.Add(ctx, 1, otelAttrs...)
+	defer span.End()
+
+	response, err := s.h.Health(ctx)
+	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "Internal")
+		s.errors.Add(ctx, 1, otelAttrs...)
+		respondError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := encodeHealthResponse(response, w, span); err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "Response")
+		s.errors.Add(ctx, 1, otelAttrs...)
+		return
+	}
+	span.SetStatus(codes.Ok, "Ok")
+	elapsedDuration := time.Since(startTime)
+	s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
+}
+
+// HandleListUserRequest handles listUser operation.
+//
+// GET /users
+func (s *Server) handleListUserRequest(args [0]string, w http.ResponseWriter, r *http.Request) {
+	startTime := time.Now()
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("listUser"),
+	}
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "ListUser",
+		trace.WithAttributes(otelAttrs...),
+		trace.WithSpanKind(trace.SpanKindServer),
+	)
+	s.requests.Add(ctx, 1, otelAttrs...)
+	defer span.End()
+	params, err := decodeListUserParams(args, r)
+	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "BadRequest")
+		s.errors.Add(ctx, 1, otelAttrs...)
+		respondError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	response, err := s.h.ListUser(ctx, params)
+	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "Internal")
+		s.errors.Add(ctx, 1, otelAttrs...)
+		respondError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := encodeListUserResponse(response, w, span); err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "Response")
+		s.errors.Add(ctx, 1, otelAttrs...)
+		return
+	}
+	span.SetStatus(codes.Ok, "Ok")
+	elapsedDuration := time.Since(startTime)
+	s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
+}
+
+// HandleReadUserRequest handles readUser operation.
+//
+// GET /users/{id}
+func (s *Server) handleReadUserRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
+	startTime := time.Now()
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("readUser"),
+	}
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "ReadUser",
+		trace.WithAttributes(otelAttrs...),
+		trace.WithSpanKind(trace.SpanKindServer),
+	)
+	s.requests.Add(ctx, 1, otelAttrs...)
+	defer span.End()
+	params, err := decodeReadUserParams(args, r)
+	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "BadRequest")
+		s.errors.Add(ctx, 1, otelAttrs...)
+		respondError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	response, err := s.h.ReadUser(ctx, params)
+	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "Internal")
+		s.errors.Add(ctx, 1, otelAttrs...)
+		respondError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := encodeReadUserResponse(response, w, span); err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "Response")
+		s.errors.Add(ctx, 1, otelAttrs...)
+		return
+	}
+	span.SetStatus(codes.Ok, "Ok")
+	elapsedDuration := time.Since(startTime)
+	s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
+}
+
+// HandleUpdateUserRequest handles updateUser operation.
+//
+// PATCH /users/{id}
+func (s *Server) handleUpdateUserRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
+	startTime := time.Now()
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("updateUser"),
+	}
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "UpdateUser",
+		trace.WithAttributes(otelAttrs...),
+		trace.WithSpanKind(trace.SpanKindServer),
+	)
+	s.requests.Add(ctx, 1, otelAttrs...)
+	defer span.End()
+	params, err := decodeUpdateUserParams(args, r)
+	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "BadRequest")
+		s.errors.Add(ctx, 1, otelAttrs...)
+		respondError(w, http.StatusBadRequest, err)
+		return
+	}
+	request, err := decodeUpdateUserRequest(r, span)
+	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "BadRequest")
+		s.errors.Add(ctx, 1, otelAttrs...)
+		respondError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	response, err := s.h.UpdateUser(ctx, request, params)
+	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "Internal")
+		s.errors.Add(ctx, 1, otelAttrs...)
+		respondError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := encodeUpdateUserResponse(response, w, span); err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "Response")
+		s.errors.Add(ctx, 1, otelAttrs...)
+		return
+	}
+	span.SetStatus(codes.Ok, "Ok")
+	elapsedDuration := time.Since(startTime)
+	s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
+}
+
 func respondError(w http.ResponseWriter, code int, err error) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)

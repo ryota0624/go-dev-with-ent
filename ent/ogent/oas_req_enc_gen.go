@@ -69,3 +69,19 @@ var (
 	_ = sync.Pool{}
 	_ = codes.Unset
 )
+
+func encodeCreateUserRequestJSON(req CreateUserReq, span trace.Span) (data *jx.Writer, err error) {
+	e := jx.GetWriter()
+
+	req.Encode(e)
+
+	return e, nil
+}
+
+func encodeUpdateUserRequestJSON(req UpdateUserReq, span trace.Span) (data *jx.Writer, err error) {
+	e := jx.GetWriter()
+
+	req.Encode(e)
+
+	return e, nil
+}

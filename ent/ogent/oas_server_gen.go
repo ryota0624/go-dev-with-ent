@@ -72,6 +72,34 @@ var (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
+	// CreateUser implements createUser operation.
+	//
+	// Creates a new User and persists it to storage.
+	//
+	// POST /users
+	CreateUser(ctx context.Context, req CreateUserReq) (CreateUserRes, error)
+	// Health implements health operation.
+	//
+	// GET /health
+	Health(ctx context.Context) (HealthNoContent, error)
+	// ListUser implements listUser operation.
+	//
+	// List Users.
+	//
+	// GET /users
+	ListUser(ctx context.Context, params ListUserParams) (ListUserRes, error)
+	// ReadUser implements readUser operation.
+	//
+	// Finds the User with the requested ID and returns it.
+	//
+	// GET /users/{id}
+	ReadUser(ctx context.Context, params ReadUserParams) (ReadUserRes, error)
+	// UpdateUser implements updateUser operation.
+	//
+	// Updates a User and persists changes to storage.
+	//
+	// PATCH /users/{id}
+	UpdateUser(ctx context.Context, req UpdateUserReq, params UpdateUserParams) (UpdateUserRes, error)
 }
 
 // Server implements http server based on OpenAPI v3 specification and

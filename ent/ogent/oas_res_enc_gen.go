@@ -69,3 +69,264 @@ var (
 	_ = sync.Pool{}
 	_ = codes.Unset
 )
+
+func encodeCreateUserResponse(response CreateUserRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *UserCreate:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
+		e := jx.GetWriter()
+		defer jx.PutWriter(e)
+
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+	case *R400:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(400)
+		e := jx.GetWriter()
+		defer jx.PutWriter(e)
+
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+	case *R409:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(409)
+		e := jx.GetWriter()
+		defer jx.PutWriter(e)
+
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+	case *R500:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(500)
+		e := jx.GetWriter()
+		defer jx.PutWriter(e)
+
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+	default:
+		return errors.Errorf("/users"+`: unexpected response type: %T`, response)
+	}
+}
+
+func encodeHealthResponse(response HealthNoContent, w http.ResponseWriter, span trace.Span) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+func encodeListUserResponse(response ListUserRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *ListUserOKApplicationJSON:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
+		e := jx.GetWriter()
+		defer jx.PutWriter(e)
+
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+	case *R400:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(400)
+		e := jx.GetWriter()
+		defer jx.PutWriter(e)
+
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+	case *R404:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(404)
+		e := jx.GetWriter()
+		defer jx.PutWriter(e)
+
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+	case *R409:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(409)
+		e := jx.GetWriter()
+		defer jx.PutWriter(e)
+
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+	case *R500:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(500)
+		e := jx.GetWriter()
+		defer jx.PutWriter(e)
+
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+	default:
+		return errors.Errorf("/users"+`: unexpected response type: %T`, response)
+	}
+}
+
+func encodeReadUserResponse(response ReadUserRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *UserRead:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
+		e := jx.GetWriter()
+		defer jx.PutWriter(e)
+
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+	case *R400:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(400)
+		e := jx.GetWriter()
+		defer jx.PutWriter(e)
+
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+	case *R404:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(404)
+		e := jx.GetWriter()
+		defer jx.PutWriter(e)
+
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+	case *R409:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(409)
+		e := jx.GetWriter()
+		defer jx.PutWriter(e)
+
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+	case *R500:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(500)
+		e := jx.GetWriter()
+		defer jx.PutWriter(e)
+
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+	default:
+		return errors.Errorf("/users/{id}"+`: unexpected response type: %T`, response)
+	}
+}
+
+func encodeUpdateUserResponse(response UpdateUserRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *UserUpdate:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
+		e := jx.GetWriter()
+		defer jx.PutWriter(e)
+
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+	case *R400:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(400)
+		e := jx.GetWriter()
+		defer jx.PutWriter(e)
+
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+	case *R404:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(404)
+		e := jx.GetWriter()
+		defer jx.PutWriter(e)
+
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+	case *R409:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(409)
+		e := jx.GetWriter()
+		defer jx.PutWriter(e)
+
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+	case *R500:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(500)
+		e := jx.GetWriter()
+		defer jx.PutWriter(e)
+
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+	default:
+		return errors.Errorf("/users/{id}"+`: unexpected response type: %T`, response)
+	}
+}

@@ -69,3 +69,20 @@ var (
 	_ = sync.Pool{}
 	_ = codes.Unset
 )
+
+type ListUserParams struct {
+	// What page to render.
+	Page OptInt
+	// Item count to render per page.
+	ItemsPerPage OptInt
+}
+
+type ReadUserParams struct {
+	// ID of the User.
+	ID int
+}
+
+type UpdateUserParams struct {
+	// ID of the User.
+	ID int
+}

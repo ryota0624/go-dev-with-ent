@@ -82,8 +82,121 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		s.notFound(w, r)
 		return
 	}
+	args := [1]string{}
 	// Static code generated router with unwrapped path search.
 	switch r.Method {
+	case "GET":
+		if len(elem) == 0 {
+			break
+		}
+		switch elem[0] {
+		case '/': // Prefix: "/"
+			if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+				elem = elem[l:]
+			} else {
+				break
+			}
+
+			if len(elem) == 0 {
+				s.handleListUserRequest([0]string{}, w, r)
+
+				return
+			}
+			switch elem[0] {
+			case 'h': // Prefix: "health"
+				if l := len("health"); len(elem) >= l && elem[0:l] == "health" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf: Health
+					s.handleHealthRequest([0]string{}, w, r)
+
+					return
+				}
+			case 'u': // Prefix: "users"
+				if l := len("users"); len(elem) >= l && elem[0:l] == "users" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					s.handleListUserRequest([0]string{}, w, r)
+
+					return
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/"
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "id"
+					// Leaf parameter
+					args[0] = elem
+					elem = ""
+
+					if len(elem) == 0 {
+						// Leaf: ReadUser
+						s.handleReadUserRequest([1]string{
+							args[0],
+						}, w, r)
+
+						return
+					}
+				}
+			}
+		}
+	case "PATCH":
+		if len(elem) == 0 {
+			break
+		}
+		switch elem[0] {
+		case '/': // Prefix: "/users/"
+			if l := len("/users/"); len(elem) >= l && elem[0:l] == "/users/" {
+				elem = elem[l:]
+			} else {
+				break
+			}
+
+			// Param: "id"
+			// Leaf parameter
+			args[0] = elem
+			elem = ""
+
+			if len(elem) == 0 {
+				// Leaf: UpdateUser
+				s.handleUpdateUserRequest([1]string{
+					args[0],
+				}, w, r)
+
+				return
+			}
+		}
+	case "POST":
+		if len(elem) == 0 {
+			break
+		}
+		switch elem[0] {
+		case '/': // Prefix: "/users"
+			if l := len("/users"); len(elem) >= l && elem[0:l] == "/users" {
+				elem = elem[l:]
+			} else {
+				break
+			}
+
+			if len(elem) == 0 {
+				// Leaf: CreateUser
+				s.handleCreateUserRequest([0]string{}, w, r)
+
+				return
+			}
+		}
 	}
 	s.notFound(w, r)
 }
@@ -92,7 +205,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 type Route struct {
 	name  string
 	count int
-	args  [0]string
+	args  [1]string
 }
 
 // OperationID returns OpenAPI operationId.
@@ -108,13 +221,127 @@ func (r Route) Args() []string {
 // FindRoute finds Route for given method and path.
 func (s *Server) FindRoute(method, path string) (r Route, _ bool) {
 	var (
-		args = [0]string{}
+		args = [1]string{}
 		elem = path
 	)
 	r.args = args
 
 	// Static code generated router with unwrapped path search.
 	switch method {
+	case "GET":
+		if len(elem) == 0 {
+			break
+		}
+		switch elem[0] {
+		case '/': // Prefix: "/"
+			if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+				elem = elem[l:]
+			} else {
+				break
+			}
+
+			if len(elem) == 0 {
+				r.name = "ListUser"
+				r.args = args
+				r.count = 0
+				return r, true
+			}
+			switch elem[0] {
+			case 'h': // Prefix: "health"
+				if l := len("health"); len(elem) >= l && elem[0:l] == "health" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf: Health
+					r.name = "Health"
+					r.args = args
+					r.count = 0
+					return r, true
+				}
+			case 'u': // Prefix: "users"
+				if l := len("users"); len(elem) >= l && elem[0:l] == "users" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					r.name = "ListUser"
+					r.args = args
+					r.count = 0
+					return r, true
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/"
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "id"
+					// Leaf parameter
+					args[0] = elem
+					elem = ""
+
+					if len(elem) == 0 {
+						// Leaf: ReadUser
+						r.name = "ReadUser"
+						r.args = args
+						r.count = 1
+						return r, true
+					}
+				}
+			}
+		}
+	case "PATCH":
+		if len(elem) == 0 {
+			break
+		}
+		switch elem[0] {
+		case '/': // Prefix: "/users/"
+			if l := len("/users/"); len(elem) >= l && elem[0:l] == "/users/" {
+				elem = elem[l:]
+			} else {
+				break
+			}
+
+			// Param: "id"
+			// Leaf parameter
+			args[0] = elem
+			elem = ""
+
+			if len(elem) == 0 {
+				// Leaf: UpdateUser
+				r.name = "UpdateUser"
+				r.args = args
+				r.count = 1
+				return r, true
+			}
+		}
+	case "POST":
+		if len(elem) == 0 {
+			break
+		}
+		switch elem[0] {
+		case '/': // Prefix: "/users"
+			if l := len("/users"); len(elem) >= l && elem[0:l] == "/users" {
+				elem = elem[l:]
+			} else {
+				break
+			}
+
+			if len(elem) == 0 {
+				// Leaf: CreateUser
+				r.name = "CreateUser"
+				r.args = args
+				r.count = 0
+				return r, true
+			}
+		}
 	}
 	return r, false
 }

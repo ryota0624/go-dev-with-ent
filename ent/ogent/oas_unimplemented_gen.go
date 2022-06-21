@@ -74,3 +74,46 @@ var _ Handler = UnimplementedHandler{}
 
 // UnimplementedHandler is no-op Handler which returns http.ErrNotImplemented.
 type UnimplementedHandler struct{}
+
+// CreateUser implements createUser operation.
+//
+// Creates a new User and persists it to storage.
+//
+// POST /users
+func (UnimplementedHandler) CreateUser(ctx context.Context, req CreateUserReq) (r CreateUserRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// Health implements health operation.
+//
+// GET /health
+func (UnimplementedHandler) Health(ctx context.Context) (r HealthNoContent, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ListUser implements listUser operation.
+//
+// List Users.
+//
+// GET /users
+func (UnimplementedHandler) ListUser(ctx context.Context, params ListUserParams) (r ListUserRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ReadUser implements readUser operation.
+//
+// Finds the User with the requested ID and returns it.
+//
+// GET /users/{id}
+func (UnimplementedHandler) ReadUser(ctx context.Context, params ReadUserParams) (r ReadUserRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// UpdateUser implements updateUser operation.
+//
+// Updates a User and persists changes to storage.
+//
+// PATCH /users/{id}
+func (UnimplementedHandler) UpdateUser(ctx context.Context, req UpdateUserReq, params UpdateUserParams) (r UpdateUserRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
