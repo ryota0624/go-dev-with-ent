@@ -32,7 +32,7 @@ require (
 	github.com/google/go-cmp v0.5.7 // indirect
 	github.com/hashicorp/hcl/v2 v2.11.1 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
-	github.com/jhump/protoreflect v1.10.1 // indirect
+	github.com/jhump/protoreflect v1.11.1-0.20220215191356-c1d18a52a21d // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
