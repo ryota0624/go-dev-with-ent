@@ -2,6 +2,8 @@
 
 package main
 
+// package ent
+
 import (
 	"log"
 
@@ -19,7 +21,8 @@ func main() {
 		spec.AddPathItem("/health", ogen.NewPathItem().SetDescription("return service healthy status").
 			SetGet(ogen.NewOperation().SetOperationID("health").AddResponse("204", ogen.NewResponse())))
 		return nil
-	}))
+	}), entoas.DefaultPolicy(entoas.PolicyExclude))
+
 	if err != nil {
 		log.Fatalf("creating entoas extension: %v", err)
 	}
