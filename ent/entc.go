@@ -15,7 +15,11 @@ import (
 
 func main() {
 	spec := new(ogen.Spec)
-	oas, err := entoas.NewExtension(entoas.Spec(spec))
+	oas, err := entoas.NewExtension(entoas.Spec(spec), entoas.Mutations(func(_ *gen.Graph, spec *ogen.Spec) error {
+		spec.AddPathItem("/health", ogen.NewPathItem().SetDescription("return service healthy status").
+			SetGet(ogen.NewOperation().SetOperationID("health").AddResponse("204", ogen.NewResponse())))
+		return nil
+	}))
 	if err != nil {
 		log.Fatalf("creating entoas extension: %v", err)
 	}
@@ -24,7 +28,7 @@ func main() {
 		log.Fatalf("creating ogent extension: %v", err)
 	}
 
-	err = entc.Generate("./schema", &gen.Config{}, entc.Extensions(entviz.Extension{}, oas, ogent))
+	err = entc.Generate("./schema", &gen.Config{}, entc.Extensions(entviz.Extension{}, ogent, oas))
 	if err != nil {
 		log.Fatalf("running ent codegen: %v", err)
 	}
