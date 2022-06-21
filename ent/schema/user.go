@@ -1,7 +1,9 @@
 package schema
 
 import (
+	"entgo.io/contrib/entoas"
 	"entgo.io/ent"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -27,5 +29,14 @@ func (User) Edges() []ent.Edge {
 		edge.To("cars", Car.Type),
 		edge.From("groups", Group.Type).
 			Ref("users"),
+	}
+}
+
+func (User) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entoas.CreateOperation(entoas.OperationPolicy(entoas.PolicyExpose)),
+		entoas.ListOperation(entoas.OperationPolicy(entoas.PolicyExpose)),
+		entoas.UpdateOperation(entoas.OperationPolicy(entoas.PolicyExpose)),
+		entoas.ReadOperation(entoas.OperationPolicy(entoas.PolicyExpose)),
 	}
 }
