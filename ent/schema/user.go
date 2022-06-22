@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // User holds the schema definition for the User entity.
@@ -17,6 +18,10 @@ type User struct {
 // Fields of the User.
 func (User) Fields() []ent.Field {
 	return []ent.Field{
+		field.UUID("id", uuid.UUID{}).
+			Unique().
+			Default(uuid.New).
+			StorageKey("id").Annotations(entproto.Field(1)),
 		field.Int("age").
 			Positive().Annotations(entproto.Field(2)),
 		field.String("name").
@@ -27,7 +32,7 @@ func (User) Fields() []ent.Field {
 // Edges of the User.
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("cars", Car.Type).Annotations(entproto.Field(4)),
+		edge.To("cars", Car.Type).Annotations(entproto.Skip()),
 		edge.From("groups", Group.Type).
 			Ref("users").Annotations(entproto.Skip()),
 	}

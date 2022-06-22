@@ -12,6 +12,7 @@ import (
 	"entgo.io/contrib/entproto"
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
+	"entgo.io/ent/schema/field"
 	"github.com/hedwigz/entviz"
 	"github.com/ogen-go/ogen"
 )
@@ -33,6 +34,9 @@ func main() {
 	}
 
 	err = entc.Generate("./schema", &gen.Config{
+		IDType: &field.TypeInfo{
+			Type: field.TypeUUID,
+		},
 		Hooks: []gen.Hook{
 			entproto.Hook(),
 		},

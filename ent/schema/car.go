@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // Car holds the schema definition for the Car entity.
@@ -16,6 +17,10 @@ type Car struct {
 // Fields of the Car.
 func (Car) Fields() []ent.Field {
 	return []ent.Field{
+		field.UUID("id", uuid.UUID{}).
+			Unique().
+			Default(uuid.New).
+			StorageKey("id").Annotations(entproto.Field(1)),
 		field.String("model").Annotations(entproto.Field(2)),
 		field.Time("registered_at").Annotations(entproto.Field(3)),
 	}

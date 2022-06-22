@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // Group holds the schema definition for the Group entity.
@@ -18,6 +19,10 @@ type Group struct {
 // Fields of the Group.
 func (Group) Fields() []ent.Field {
 	return []ent.Field{
+		field.UUID("id", uuid.UUID{}).
+			Unique().
+			Default(uuid.New).
+			StorageKey("id").Annotations(entproto.Field(1)),
 		field.String("name").
 			// Regexp validation for group name.
 			Match(regexp.MustCompile("[a-zA-Z_]+$")).Annotations(entproto.Field(2)),
