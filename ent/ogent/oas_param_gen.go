@@ -79,10 +79,10 @@ type ListUserParams struct {
 
 type ReadUserParams struct {
 	// ID of the User.
-	ID int
+	ID uuid.UUID
 }
 
 type UpdateUserParams struct {
 	// ID of the User.
-	ID int
+	ID uuid.UUID
 }

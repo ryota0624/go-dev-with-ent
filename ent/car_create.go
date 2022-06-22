@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/ryota0624/go-dev-with-ent/ent/car"
 	"github.com/ryota0624/go-dev-with-ent/ent/user"
 )
@@ -33,14 +34,28 @@ func (cc *CarCreate) SetRegisteredAt(t time.Time) *CarCreate {
 	return cc
 }
 
+// SetID sets the "id" field.
+func (cc *CarCreate) SetID(u uuid.UUID) *CarCreate {
+	cc.mutation.SetID(u)
+	return cc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (cc *CarCreate) SetNillableID(u *uuid.UUID) *CarCreate {
+	if u != nil {
+		cc.SetID(*u)
+	}
+	return cc
+}
+
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (cc *CarCreate) SetOwnerID(id int) *CarCreate {
+func (cc *CarCreate) SetOwnerID(id uuid.UUID) *CarCreate {
 	cc.mutation.SetOwnerID(id)
 	return cc
 }
 
 // SetNillableOwnerID sets the "owner" edge to the User entity by ID if the given value is not nil.
-func (cc *CarCreate) SetNillableOwnerID(id *int) *CarCreate {
+func (cc *CarCreate) SetNillableOwnerID(id *uuid.UUID) *CarCreate {
 	if id != nil {
 		cc = cc.SetOwnerID(*id)
 	}
@@ -63,6 +78,7 @@ func (cc *CarCreate) Save(ctx context.Context) (*Car, error) {
 		err  error
 		node *Car
 	)
+	cc.defaults()
 	if len(cc.hooks) == 0 {
 		if err = cc.check(); err != nil {
 			return nil, err
@@ -120,6 +136,14 @@ func (cc *CarCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (cc *CarCreate) defaults() {
+	if _, ok := cc.mutation.ID(); !ok {
+		v := car.DefaultID()
+		cc.mutation.SetID(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (cc *CarCreate) check() error {
 	if _, ok := cc.mutation.Model(); !ok {
@@ -139,8 +163,13 @@ func (cc *CarCreate) sqlSave(ctx context.Context) (*Car, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
+	}
 	return _node, nil
 }
 
@@ -150,11 +179,15 @@ func (cc *CarCreate) createSpec() (*Car, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: car.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: car.FieldID,
 			},
 		}
 	)
+	if id, ok := cc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = &id
+	}
 	if value, ok := cc.mutation.Model(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -180,7 +213,7 @@ func (cc *CarCreate) createSpec() (*Car, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -208,6 +241,7 @@ func (ccb *CarCreateBulk) Save(ctx context.Context) ([]*Car, error) {
 	for i := range ccb.builders {
 		func(i int, root context.Context) {
 			builder := ccb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*CarMutation)
 				if !ok {
@@ -235,10 +269,6 @@ func (ccb *CarCreateBulk) Save(ctx context.Context) ([]*Car, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

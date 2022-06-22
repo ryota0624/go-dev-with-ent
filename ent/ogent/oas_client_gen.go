@@ -318,7 +318,7 @@ func (c *Client) ReadUser(ctx context.Context, params ReadUserParams) (res ReadU
 			Explode: false,
 		})
 		if err := func() error {
-			return e.EncodeValue(conv.IntToString(params.ID))
+			return e.EncodeValue(conv.UUIDToString(params.ID))
 		}(); err != nil {
 			return res, errors.Wrap(err, "encode path")
 		}
@@ -389,7 +389,7 @@ func (c *Client) UpdateUser(ctx context.Context, request UpdateUserReq, params U
 			Explode: false,
 		})
 		if err := func() error {
-			return e.EncodeValue(conv.IntToString(params.ID))
+			return e.EncodeValue(conv.UUIDToString(params.ID))
 		}(); err != nil {
 			return res, errors.Wrap(err, "encode path")
 		}

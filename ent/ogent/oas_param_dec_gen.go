@@ -169,7 +169,7 @@ func decodeReadUserParams(args [1]string, r *http.Request) (ReadUserParams, erro
 					return err
 				}
 
-				c, err := conv.ToInt(s)
+				c, err := conv.ToUUID(s)
 				if err != nil {
 					return err
 				}
@@ -207,7 +207,7 @@ func decodeUpdateUserParams(args [1]string, r *http.Request) (UpdateUserParams, 
 					return err
 				}
 
-				c, err := conv.ToInt(s)
+				c, err := conv.ToUUID(s)
 				if err != nil {
 					return err
 				}

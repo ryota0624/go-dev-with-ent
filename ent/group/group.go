@@ -2,6 +2,10 @@
 
 package group
 
+import (
+	"github.com/google/uuid"
+)
+
 const (
 	// Label holds the string label denoting the group type in the database.
 	Label = "group"
@@ -45,4 +49,6 @@ func ValidColumn(column string) bool {
 var (
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() uuid.UUID
 )

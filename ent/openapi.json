@@ -92,13 +92,15 @@
                   "cars": {
                     "type": "array",
                     "items": {
-                      "type": "integer"
+                      "type": "string",
+                      "format": "uuid"
                     }
                   },
                   "groups": {
                     "type": "array",
                     "items": {
-                      "type": "integer"
+                      "type": "string",
+                      "format": "uuid"
                     }
                   }
                 },
@@ -148,7 +150,8 @@
             "in": "path",
             "description": "ID of the User",
             "schema": {
-              "type": "integer"
+              "type": "string",
+              "format": "uuid"
             },
             "required": true
           }
@@ -191,7 +194,8 @@
             "in": "path",
             "description": "ID of the User",
             "schema": {
-              "type": "integer"
+              "type": "string",
+              "format": "uuid"
             },
             "required": true
           }
@@ -212,13 +216,15 @@
                   "cars": {
                     "type": "array",
                     "items": {
-                      "type": "integer"
+                      "type": "string",
+                      "format": "uuid"
                     }
                   },
                   "groups": {
                     "type": "array",
                     "items": {
-                      "type": "integer"
+                      "type": "string",
+                      "format": "uuid"
                     }
                   }
                 }
@@ -260,7 +266,8 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "integer"
+            "type": "string",
+            "format": "uuid"
           },
           "model": {
             "type": "string"
@@ -283,7 +290,8 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "integer"
+            "type": "string",
+            "format": "uuid"
           },
           "name": {
             "type": "string"
@@ -304,7 +312,8 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "integer"
+            "type": "string",
+            "format": "uuid"
           },
           "age": {
             "type": "integer"
@@ -335,7 +344,8 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "integer"
+            "type": "string",
+            "format": "uuid"
           },
           "age": {
             "type": "integer"
@@ -354,7 +364,8 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "integer"
+            "type": "string",
+            "format": "uuid"
           },
           "age": {
             "type": "integer"
@@ -373,7 +384,8 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "integer"
+            "type": "string",
+            "format": "uuid"
           },
           "age": {
             "type": "integer"
@@ -392,7 +404,8 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "integer"
+            "type": "string",
+            "format": "uuid"
           },
           "age": {
             "type": "integer"

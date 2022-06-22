@@ -103,11 +103,11 @@ func (s CreateUserReq) Encode(e *jx.Writer) {
 				// Encode first element without comma.
 				{
 					elem := s.Cars[0]
-					e.Int(elem)
+					json.EncodeUUID(e, elem)
 				}
 				for _, elem := range s.Cars[1:] {
 					e.Comma()
-					e.Int(elem)
+					json.EncodeUUID(e, elem)
 				}
 			}
 			e.ArrEnd()
@@ -124,11 +124,11 @@ func (s CreateUserReq) Encode(e *jx.Writer) {
 				// Encode first element without comma.
 				{
 					elem := s.Groups[0]
-					e.Int(elem)
+					json.EncodeUUID(e, elem)
 				}
 				for _, elem := range s.Groups[1:] {
 					e.Comma()
-					e.Int(elem)
+					json.EncodeUUID(e, elem)
 				}
 			}
 			e.ArrEnd()
@@ -179,11 +179,11 @@ func (s *CreateUserReq) Decode(d *jx.Decoder) error {
 			}
 		case "cars":
 			if err := func() error {
-				s.Cars = make([]int, 0)
+				s.Cars = make([]uuid.UUID, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem int
-					v, err := d.Int()
-					elem = int(v)
+					var elem uuid.UUID
+					v, err := json.DecodeUUID(d)
+					elem = v
 					if err != nil {
 						return err
 					}
@@ -198,11 +198,11 @@ func (s *CreateUserReq) Decode(d *jx.Decoder) error {
 			}
 		case "groups":
 			if err := func() error {
-				s.Groups = make([]int, 0)
+				s.Groups = make([]uuid.UUID, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem int
-					v, err := d.Int()
-					elem = int(v)
+					var elem uuid.UUID
+					v, err := json.DecodeUUID(d)
+					elem = v
 					if err != nil {
 						return err
 					}
@@ -903,11 +903,11 @@ func (s UpdateUserReq) Encode(e *jx.Writer) {
 				// Encode first element without comma.
 				{
 					elem := s.Cars[0]
-					e.Int(elem)
+					json.EncodeUUID(e, elem)
 				}
 				for _, elem := range s.Cars[1:] {
 					e.Comma()
-					e.Int(elem)
+					json.EncodeUUID(e, elem)
 				}
 			}
 			e.ArrEnd()
@@ -927,11 +927,11 @@ func (s UpdateUserReq) Encode(e *jx.Writer) {
 				// Encode first element without comma.
 				{
 					elem := s.Groups[0]
-					e.Int(elem)
+					json.EncodeUUID(e, elem)
 				}
 				for _, elem := range s.Groups[1:] {
 					e.Comma()
-					e.Int(elem)
+					json.EncodeUUID(e, elem)
 				}
 			}
 			e.ArrEnd()
@@ -977,11 +977,11 @@ func (s *UpdateUserReq) Decode(d *jx.Decoder) error {
 			}
 		case "cars":
 			if err := func() error {
-				s.Cars = make([]int, 0)
+				s.Cars = make([]uuid.UUID, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem int
-					v, err := d.Int()
-					elem = int(v)
+					var elem uuid.UUID
+					v, err := json.DecodeUUID(d)
+					elem = v
 					if err != nil {
 						return err
 					}
@@ -996,11 +996,11 @@ func (s *UpdateUserReq) Decode(d *jx.Decoder) error {
 			}
 		case "groups":
 			if err := func() error {
-				s.Groups = make([]int, 0)
+				s.Groups = make([]uuid.UUID, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem int
-					v, err := d.Int()
-					elem = int(v)
+					var elem uuid.UUID
+					v, err := json.DecodeUUID(d)
+					elem = v
 					if err != nil {
 						return err
 					}
@@ -1038,7 +1038,7 @@ func (s UserCreate) Encode(e *jx.Writer) {
 		first = false
 
 		e.RawStr("\"id\"" + ":")
-		e.Int(s.ID)
+		json.EncodeUUID(e, s.ID)
 	}
 	{
 		e.Comma()
@@ -1073,8 +1073,8 @@ func (s *UserCreate) Decode(d *jx.Decoder) error {
 		case "id":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.Int()
-				s.ID = int(v)
+				v, err := json.DecodeUUID(d)
+				s.ID = v
 				if err != nil {
 					return err
 				}
@@ -1163,7 +1163,7 @@ func (s UserList) Encode(e *jx.Writer) {
 		first = false
 
 		e.RawStr("\"id\"" + ":")
-		e.Int(s.ID)
+		json.EncodeUUID(e, s.ID)
 	}
 	{
 		e.Comma()
@@ -1198,8 +1198,8 @@ func (s *UserList) Decode(d *jx.Decoder) error {
 		case "id":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.Int()
-				s.ID = int(v)
+				v, err := json.DecodeUUID(d)
+				s.ID = v
 				if err != nil {
 					return err
 				}
@@ -1288,7 +1288,7 @@ func (s UserRead) Encode(e *jx.Writer) {
 		first = false
 
 		e.RawStr("\"id\"" + ":")
-		e.Int(s.ID)
+		json.EncodeUUID(e, s.ID)
 	}
 	{
 		e.Comma()
@@ -1323,8 +1323,8 @@ func (s *UserRead) Decode(d *jx.Decoder) error {
 		case "id":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.Int()
-				s.ID = int(v)
+				v, err := json.DecodeUUID(d)
+				s.ID = v
 				if err != nil {
 					return err
 				}
@@ -1413,7 +1413,7 @@ func (s UserUpdate) Encode(e *jx.Writer) {
 		first = false
 
 		e.RawStr("\"id\"" + ":")
-		e.Int(s.ID)
+		json.EncodeUUID(e, s.ID)
 	}
 	{
 		e.Comma()
@@ -1448,8 +1448,8 @@ func (s *UserUpdate) Decode(d *jx.Decoder) error {
 		case "id":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.Int()
-				s.ID = int(v)
+				v, err := json.DecodeUUID(d)
+				s.ID = v
 				if err != nil {
 					return err
 				}

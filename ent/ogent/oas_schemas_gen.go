@@ -71,10 +71,10 @@ var (
 )
 
 type CreateUserReq struct {
-	Age    int    "json:\"age\""
-	Name   string "json:\"name\""
-	Cars   []int  "json:\"cars\""
-	Groups []int  "json:\"groups\""
+	Age    int         "json:\"age\""
+	Name   string      "json:\"name\""
+	Cars   []uuid.UUID "json:\"cars\""
+	Groups []uuid.UUID "json:\"groups\""
 }
 
 // HealthNoContent is response for Health operation.
@@ -220,42 +220,42 @@ func (*R500) readUserRes()   {}
 func (*R500) updateUserRes() {}
 
 type UpdateUserReq struct {
-	Age    OptInt    "json:\"age\""
-	Name   OptString "json:\"name\""
-	Cars   []int     "json:\"cars\""
-	Groups []int     "json:\"groups\""
+	Age    OptInt      "json:\"age\""
+	Name   OptString   "json:\"name\""
+	Cars   []uuid.UUID "json:\"cars\""
+	Groups []uuid.UUID "json:\"groups\""
 }
 
 // Ref: #/components/schemas/UserCreate
 type UserCreate struct {
-	ID   int    "json:\"id\""
-	Age  int    "json:\"age\""
-	Name string "json:\"name\""
+	ID   uuid.UUID "json:\"id\""
+	Age  int       "json:\"age\""
+	Name string    "json:\"name\""
 }
 
 func (*UserCreate) createUserRes() {}
 
 // Ref: #/components/schemas/UserList
 type UserList struct {
-	ID   int    "json:\"id\""
-	Age  int    "json:\"age\""
-	Name string "json:\"name\""
+	ID   uuid.UUID "json:\"id\""
+	Age  int       "json:\"age\""
+	Name string    "json:\"name\""
 }
 
 // Ref: #/components/schemas/UserRead
 type UserRead struct {
-	ID   int    "json:\"id\""
-	Age  int    "json:\"age\""
-	Name string "json:\"name\""
+	ID   uuid.UUID "json:\"id\""
+	Age  int       "json:\"age\""
+	Name string    "json:\"name\""
 }
 
 func (*UserRead) readUserRes() {}
 
 // Ref: #/components/schemas/UserUpdate
 type UserUpdate struct {
-	ID   int    "json:\"id\""
-	Age  int    "json:\"age\""
-	Name string "json:\"name\""
+	ID   uuid.UUID "json:\"id\""
+	Age  int       "json:\"age\""
+	Name string    "json:\"name\""
 }
 
 func (*UserUpdate) updateUserRes() {}

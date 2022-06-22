@@ -8,13 +8,12 @@ import (
 	sqlgraph "entgo.io/ent/dialect/sql/sqlgraph"
 	fmt "fmt"
 	empty "github.com/golang/protobuf/ptypes/empty"
+	uuid "github.com/google/uuid"
 	ent "github.com/ryota0624/go-dev-with-ent/ent"
-	car "github.com/ryota0624/go-dev-with-ent/ent/car"
 	user "github.com/ryota0624/go-dev-with-ent/ent/user"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	strconv "strconv"
 )
 
 // UserService implements UserServiceServer
@@ -35,16 +34,13 @@ func toProtoUser(e *ent.User) (*User, error) {
 	v := &User{}
 	age := int64(e.Age)
 	v.Age = age
-	id := int64(e.ID)
+	id, err := e.ID.MarshalBinary()
+	if err != nil {
+		return nil, err
+	}
 	v.Id = id
 	name := e.Name
 	v.Name = name
-	for _, edg := range e.Edges.Cars {
-		id := int64(edg.ID)
-		v.Cars = append(v.Cars, &Car{
-			Id: id,
-		})
-	}
 	return v, nil
 }
 
@@ -56,10 +52,6 @@ func (svc *UserService) Create(ctx context.Context, req *CreateUserRequest) (*Us
 	m.SetAge(userAge)
 	userName := user.GetName()
 	m.SetName(userName)
-	for _, item := range user.GetCars() {
-		cars := int(item.GetId())
-		m.AddCarIDs(cars)
-	}
 	res, err := m.Save(ctx)
 	switch {
 	case err == nil:
@@ -84,16 +76,16 @@ func (svc *UserService) Get(ctx context.Context, req *GetUserRequest) (*User, er
 		err error
 		get *ent.User
 	)
-	id := int(req.GetId())
+	var id uuid.UUID
+	if err := (&id).UnmarshalBinary(req.GetId()); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid argument: %s", err)
+	}
 	switch req.GetView() {
 	case GetUserRequest_VIEW_UNSPECIFIED, GetUserRequest_BASIC:
 		get, err = svc.client.User.Get(ctx, id)
 	case GetUserRequest_WITH_EDGE_IDS:
 		get, err = svc.client.User.Query().
 			Where(user.ID(id)).
-			WithCars(func(query *ent.CarQuery) {
-				query.Select(car.FieldID)
-			}).
 			Only(ctx)
 	default:
 		return nil, status.Error(codes.InvalidArgument, "invalid argument: unknown view")
@@ -112,16 +104,15 @@ func (svc *UserService) Get(ctx context.Context, req *GetUserRequest) (*User, er
 // Update implements UserServiceServer.Update
 func (svc *UserService) Update(ctx context.Context, req *UpdateUserRequest) (*User, error) {
 	user := req.GetUser()
-	userID := int(user.GetId())
+	var userID uuid.UUID
+	if err := (&userID).UnmarshalBinary(user.GetId()); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid argument: %s", err)
+	}
 	m := svc.client.User.UpdateOneID(userID)
 	userAge := int(user.GetAge())
 	m.SetAge(userAge)
 	userName := user.GetName()
 	m.SetName(userName)
-	for _, item := range user.GetCars() {
-		cars := int(item.GetId())
-		m.AddCarIDs(cars)
-	}
 	res, err := m.Save(ctx)
 	switch {
 	case err == nil:
@@ -143,7 +134,10 @@ func (svc *UserService) Update(ctx context.Context, req *UpdateUserRequest) (*Us
 // Delete implements UserServiceServer.Delete
 func (svc *UserService) Delete(ctx context.Context, req *DeleteUserRequest) (*empty.Empty, error) {
 	var err error
-	id := int(req.GetId())
+	var id uuid.UUID
+	if err := (&id).UnmarshalBinary(req.GetId()); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid argument: %s", err)
+	}
 	err = svc.client.User.DeleteOneID(id).Exec(ctx)
 	switch {
 	case err == nil:
@@ -178,11 +172,10 @@ func (svc *UserService) List(ctx context.Context, req *ListUserRequest) (*ListUs
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "page token is invalid")
 		}
-		token, err := strconv.ParseInt(string(bytes), 10, 32)
+		pageToken, err := uuid.ParseBytes(bytes)
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "page token is invalid")
 		}
-		pageToken := int(token)
 		listQuery = listQuery.
 			Where(user.IDLTE(pageToken))
 	}
@@ -191,9 +184,6 @@ func (svc *UserService) List(ctx context.Context, req *ListUserRequest) (*ListUs
 		entList, err = listQuery.All(ctx)
 	case ListUserRequest_WITH_EDGE_IDS:
 		entList, err = listQuery.
-			WithCars(func(query *ent.CarQuery) {
-				query.Select(car.FieldID)
-			}).
 			All(ctx)
 	}
 	switch {

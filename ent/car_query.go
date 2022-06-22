@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/ryota0624/go-dev-with-ent/ent/car"
 	"github.com/ryota0624/go-dev-with-ent/ent/predicate"
 	"github.com/ryota0624/go-dev-with-ent/ent/user"
@@ -109,8 +110,8 @@ func (cq *CarQuery) FirstX(ctx context.Context) *Car {
 
 // FirstID returns the first Car ID from the query.
 // Returns a *NotFoundError when no Car ID was found.
-func (cq *CarQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (cq *CarQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = cq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -122,7 +123,7 @@ func (cq *CarQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (cq *CarQuery) FirstIDX(ctx context.Context) int {
+func (cq *CarQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := cq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -160,8 +161,8 @@ func (cq *CarQuery) OnlyX(ctx context.Context) *Car {
 // OnlyID is like Only, but returns the only Car ID in the query.
 // Returns a *NotSingularError when more than one Car ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (cq *CarQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (cq *CarQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = cq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -177,7 +178,7 @@ func (cq *CarQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (cq *CarQuery) OnlyIDX(ctx context.Context) int {
+func (cq *CarQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := cq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -203,8 +204,8 @@ func (cq *CarQuery) AllX(ctx context.Context) []*Car {
 }
 
 // IDs executes the query and returns a list of Car IDs.
-func (cq *CarQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (cq *CarQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
 	if err := cq.Select(car.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -212,7 +213,7 @@ func (cq *CarQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (cq *CarQuery) IDsX(ctx context.Context) []int {
+func (cq *CarQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := cq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -386,8 +387,8 @@ func (cq *CarQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Car, err
 	}
 
 	if query := cq.withOwner; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*Car)
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*Car)
 		for i := range nodes {
 			if nodes[i].user_cars == nil {
 				continue
@@ -440,7 +441,7 @@ func (cq *CarQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   car.Table,
 			Columns: car.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: car.FieldID,
 			},
 		},

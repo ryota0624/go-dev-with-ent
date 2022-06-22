@@ -3,6 +3,8 @@
 package ent
 
 import (
+	"github.com/google/uuid"
+	"github.com/ryota0624/go-dev-with-ent/ent/car"
 	"github.com/ryota0624/go-dev-with-ent/ent/group"
 	"github.com/ryota0624/go-dev-with-ent/ent/schema"
 	"github.com/ryota0624/go-dev-with-ent/ent/user"
@@ -12,20 +14,34 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	carFields := schema.Car{}.Fields()
+	_ = carFields
+	// carDescID is the schema descriptor for id field.
+	carDescID := carFields[0].Descriptor()
+	// car.DefaultID holds the default value on creation for the id field.
+	car.DefaultID = carDescID.Default.(func() uuid.UUID)
 	groupFields := schema.Group{}.Fields()
 	_ = groupFields
 	// groupDescName is the schema descriptor for name field.
-	groupDescName := groupFields[0].Descriptor()
+	groupDescName := groupFields[1].Descriptor()
 	// group.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	group.NameValidator = groupDescName.Validators[0].(func(string) error)
+	// groupDescID is the schema descriptor for id field.
+	groupDescID := groupFields[0].Descriptor()
+	// group.DefaultID holds the default value on creation for the id field.
+	group.DefaultID = groupDescID.Default.(func() uuid.UUID)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescAge is the schema descriptor for age field.
-	userDescAge := userFields[0].Descriptor()
+	userDescAge := userFields[1].Descriptor()
 	// user.AgeValidator is a validator for the "age" field. It is called by the builders before save.
 	user.AgeValidator = userDescAge.Validators[0].(func(int) error)
 	// userDescName is the schema descriptor for name field.
-	userDescName := userFields[1].Descriptor()
+	userDescName := userFields[2].Descriptor()
 	// user.DefaultName holds the default value on creation for the name field.
 	user.DefaultName = userDescName.Default.(string)
+	// userDescID is the schema descriptor for id field.
+	userDescID := userFields[0].Descriptor()
+	// user.DefaultID holds the default value on creation for the id field.
+	user.DefaultID = userDescID.Default.(func() uuid.UUID)
 }
