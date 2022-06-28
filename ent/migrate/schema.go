@@ -13,7 +13,7 @@ var (
 		{Name: "id", Type: field.TypeUUID, Unique: true},
 		{Name: "model", Type: field.TypeString},
 		{Name: "registered_at", Type: field.TypeTime},
-		{Name: "user_cars", Type: field.TypeUUID, Nullable: true},
+		{Name: "user_cars", Type: field.TypeUUID},
 	}
 	// CarsTable holds the schema information for the "cars" table.
 	CarsTable = &schema.Table{
@@ -25,7 +25,7 @@ var (
 				Symbol:     "cars_users_cars",
 				Columns:    []*schema.Column{CarsColumns[3]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}

@@ -443,6 +443,49 @@ func (c *CarQuery) Paginate(
 	return conn, nil
 }
 
+var (
+	// CarOrderFieldRegisteredAt orders Car by registered_at.
+	CarOrderFieldRegisteredAt = &CarOrderField{
+		field: car.FieldRegisteredAt,
+		toCursor: func(c *Car) Cursor {
+			return Cursor{
+				ID:    c.ID,
+				Value: c.RegisteredAt,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f CarOrderField) String() string {
+	var str string
+	switch f.field {
+	case car.FieldRegisteredAt:
+		str = "REGISTERED_AT"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f CarOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *CarOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("CarOrderField %T must be a string", v)
+	}
+	switch str {
+	case "REGISTERED_AT":
+		*f = *CarOrderFieldRegisteredAt
+	default:
+		return fmt.Errorf("%s is not a valid CarOrderField", str)
+	}
+	return nil
+}
+
 // CarOrderField defines the ordering field of Car.
 type CarOrderField struct {
 	field    string
@@ -907,6 +950,49 @@ func (u *UserQuery) Paginate(
 	}
 	conn.build(nodes, pager, first, last)
 	return conn, nil
+}
+
+var (
+	// UserOrderFieldAge orders User by age.
+	UserOrderFieldAge = &UserOrderField{
+		field: user.FieldAge,
+		toCursor: func(u *User) Cursor {
+			return Cursor{
+				ID:    u.ID,
+				Value: u.Age,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f UserOrderField) String() string {
+	var str string
+	switch f.field {
+	case user.FieldAge:
+		str = "AGE"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f UserOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *UserOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("UserOrderField %T must be a string", v)
+	}
+	switch str {
+	case "AGE":
+		*f = *UserOrderFieldAge
+	default:
+		return fmt.Errorf("%s is not a valid UserOrderField", str)
+	}
+	return nil
 }
 
 // UserOrderField defines the ordering field of User.

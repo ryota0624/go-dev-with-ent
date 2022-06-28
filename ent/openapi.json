@@ -283,7 +283,8 @@
         "required": [
           "id",
           "model",
-          "registered_at"
+          "registered_at",
+          "owner"
         ]
       },
       "Group": {

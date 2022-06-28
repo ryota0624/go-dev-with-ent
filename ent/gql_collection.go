@@ -4,9 +4,13 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
+	"fmt"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/google/uuid"
+	"github.com/ryota0624/go-dev-with-ent/ent/user"
 )
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
@@ -61,6 +65,31 @@ func newCarPaginateArgs(rv map[string]interface{}) *carPaginateArgs {
 	}
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &CarOrder{Field: &CarOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithCarOrder(order))
+			}
+		case *CarOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithCarOrder(v))
+			}
+		}
+	}
+	if v, ok := rv[whereField].(*CarWhereInput); ok {
+		args.opts = append(args.opts, WithCarFilter(v.Filter))
 	}
 	return args
 }
@@ -118,6 +147,9 @@ func newGroupPaginateArgs(rv map[string]interface{}) *groupPaginateArgs {
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
 	}
+	if v, ok := rv[whereField].(*GroupWhereInput); ok {
+		args.opts = append(args.opts, WithGroupFilter(v.Filter))
+	}
 	return args
 }
 
@@ -142,6 +174,92 @@ func (u *UserQuery) collectField(ctx context.Context, op *graphql.OperationConte
 				path  = append(path, field.Name)
 				query = &CarQuery{config: u.config}
 			)
+			args := newCarPaginateArgs(fieldArgs(ctx, new(CarWhereInput), path...))
+			if err := validateFirstLast(args.first, args.last); err != nil {
+				return fmt.Errorf("validate first and last in path %q: %w", path, err)
+			}
+			pager, err := newCarPager(args.opts)
+			if err != nil {
+				return fmt.Errorf("create new pager in path %q: %w", path, err)
+			}
+			if query, err = pager.applyFilter(query); err != nil {
+				return err
+			}
+			if !hasCollectedField(ctx, append(path, edgesField)...) || args.first != nil && *args.first == 0 || args.last != nil && *args.last == 0 {
+				if hasCollectedField(ctx, append(path, totalCountField)...) || hasCollectedField(ctx, append(path, pageInfoField)...) {
+					query := query.Clone()
+					u.loadTotal = append(u.loadTotal, func(ctx context.Context, nodes []*User) error {
+						ids := make([]driver.Value, len(nodes))
+						for i := range nodes {
+							ids[i] = nodes[i].ID
+						}
+						var v []struct {
+							NodeID uuid.UUID `sql:"user_cars"`
+							Count  int       `sql:"count"`
+						}
+						query.Where(func(s *sql.Selector) {
+							s.Where(sql.InValues(user.CarsColumn, ids...))
+						})
+						if err := query.GroupBy(user.CarsColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
+							return err
+						}
+						m := make(map[uuid.UUID]int, len(v))
+						for i := range v {
+							m[v[i].NodeID] = v[i].Count
+						}
+						for i := range nodes {
+							n := m[nodes[i].ID]
+							nodes[i].Edges.totalCount[0] = &n
+						}
+						return nil
+					})
+				}
+				continue
+			}
+			if (args.after != nil || args.first != nil || args.before != nil || args.last != nil) && hasCollectedField(ctx, append(path, totalCountField)...) {
+				query := query.Clone()
+				u.loadTotal = append(u.loadTotal, func(ctx context.Context, nodes []*User) error {
+					ids := make([]driver.Value, len(nodes))
+					for i := range nodes {
+						ids[i] = nodes[i].ID
+					}
+					var v []struct {
+						NodeID uuid.UUID `sql:"user_cars"`
+						Count  int       `sql:"count"`
+					}
+					query.Where(func(s *sql.Selector) {
+						s.Where(sql.InValues(user.CarsColumn, ids...))
+					})
+					if err := query.GroupBy(user.CarsColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
+						return err
+					}
+					m := make(map[uuid.UUID]int, len(v))
+					for i := range v {
+						m[v[i].NodeID] = v[i].Count
+					}
+					for i := range nodes {
+						n := m[nodes[i].ID]
+						nodes[i].Edges.totalCount[0] = &n
+					}
+					return nil
+				})
+			} else {
+				u.loadTotal = append(u.loadTotal, func(_ context.Context, nodes []*User) error {
+					for i := range nodes {
+						n := len(nodes[i].Edges.Cars)
+						nodes[i].Edges.totalCount[0] = &n
+					}
+					return nil
+				})
+			}
+			query = pager.applyCursors(query, args.after, args.before)
+			if limit := paginateLimit(args.first, args.last); limit > 0 {
+				modify := limitRows(user.CarsColumn, limit, pager.orderExpr(args.last != nil))
+				query.modifiers = append(query.modifiers, modify)
+			} else {
+				query = pager.applyOrder(query, args.last != nil)
+			}
+			path = append(path, edgesField, nodeField)
 			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
 				return err
 			}
@@ -182,6 +300,31 @@ func newUserPaginateArgs(rv map[string]interface{}) *userPaginateArgs {
 	}
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &UserOrder{Field: &UserOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithUserOrder(order))
+			}
+		case *UserOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithUserOrder(v))
+			}
+		}
+	}
+	if v, ok := rv[whereField].(*UserWhereInput); ok {
+		args.opts = append(args.opts, WithUserFilter(v.Filter))
 	}
 	return args
 }

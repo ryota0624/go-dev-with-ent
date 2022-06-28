@@ -54,14 +54,6 @@ func (cc *CarCreate) SetOwnerID(id uuid.UUID) *CarCreate {
 	return cc
 }
 
-// SetNillableOwnerID sets the "owner" edge to the User entity by ID if the given value is not nil.
-func (cc *CarCreate) SetNillableOwnerID(id *uuid.UUID) *CarCreate {
-	if id != nil {
-		cc = cc.SetOwnerID(*id)
-	}
-	return cc
-}
-
 // SetOwner sets the "owner" edge to the User entity.
 func (cc *CarCreate) SetOwner(u *User) *CarCreate {
 	return cc.SetOwnerID(u.ID)
@@ -151,6 +143,9 @@ func (cc *CarCreate) check() error {
 	}
 	if _, ok := cc.mutation.RegisteredAt(); !ok {
 		return &ValidationError{Name: "registered_at", err: errors.New(`ent: missing required field "Car.registered_at"`)}
+	}
+	if _, ok := cc.mutation.OwnerID(); !ok {
+		return &ValidationError{Name: "owner", err: errors.New(`ent: missing required edge "Car.owner"`)}
 	}
 	return nil
 }
