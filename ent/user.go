@@ -34,6 +34,8 @@ type UserEdges struct {
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
+	// totalCount holds the count of the edges above.
+	totalCount [2]*int
 }
 
 // CarsOrErr returns the Cars value or an error if the edge
