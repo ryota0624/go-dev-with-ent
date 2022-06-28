@@ -8,6 +8,7 @@ import (
 	"log"
 
 	"ariga.io/ogent"
+	"entgo.io/contrib/entgql"
 	"entgo.io/contrib/entoas"
 	"entgo.io/contrib/entproto"
 	"entgo.io/ent/entc"
@@ -32,7 +33,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("creating ogent extension: %v", err)
 	}
-
+	gqlext, err := entgql.NewExtension()
+	if err != nil {
+		log.Fatalf("creating entgql extension: %v", err)
+	}
 	err = entc.Generate("./schema", &gen.Config{
 		IDType: &field.TypeInfo{
 			Type: field.TypeUUID,
@@ -40,7 +44,7 @@ func main() {
 		Hooks: []gen.Hook{
 			entproto.Hook(),
 		},
-	}, entc.Extensions(entviz.Extension{}, ogent, oas))
+	}, entc.Extensions(entviz.Extension{}, ogent, oas, gqlext))
 	if err != nil {
 		log.Fatalf("running ent codegen: %v", err)
 	}
