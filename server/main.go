@@ -20,6 +20,11 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/reflection"
+
+	gqlhandler "github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/ryota0624/go-dev-with-ent/graph"
+	"github.com/ryota0624/go-dev-with-ent/graph/generated"
 )
 
 type handler struct {
@@ -63,6 +68,11 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
+	graphqlPort, err := net.Listen("tcp", fmt.Sprintf(":%d", 8080))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+
 	servers := ms.NewServers().
 		Resister(
 			ms.NewHttpServer(&http.Server{
@@ -71,6 +81,9 @@ func main() {
 		).
 		Resister(
 			ms.NewGrpcServer(serveGrpcServices(client), grpcServicesPort),
+		).
+		Resister(
+			ms.NewHttpServer(serveGraphql(), graphqlPort),
 		).
 		Lazy(func() ms.Server {
 			return ms.NewHttpServer(serveGrpcui(grpcServicesPortNumber), grpcuiPort)
@@ -117,5 +130,15 @@ func serveGrpcui(grpcServicesPort int) *http.Server {
 
 	return &http.Server{
 		Handler: handler,
+	}
+}
+
+func serveGraphql() *http.Server {
+	srv := gqlhandler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	mux := http.NewServeMux()
+	mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	mux.Handle("/query", srv)
+	return &http.Server{
+		Handler: mux,
 	}
 }
