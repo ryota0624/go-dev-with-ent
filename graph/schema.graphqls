@@ -14,8 +14,14 @@ type User {
   name: String!
 }
 
+type Car {
+  id: ID!
+  model: String!
+}
+
 type Query {
   todos: [Todo!]!
+  cars: [Car!]!
 }
 
 input NewTodo {
