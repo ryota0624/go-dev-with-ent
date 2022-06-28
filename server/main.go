@@ -65,9 +65,6 @@ func main() {
 
 	servers := ms.NewServers().
 		Resister(
-			ms.NewHttpServer(serveGrpcui(grpcServicesPortNumber), grpcuiPort),
-		).
-		Resister(
 			ms.NewHttpServer(&http.Server{
 				Handler: srv,
 			}, restApiPort),
@@ -75,6 +72,9 @@ func main() {
 		Resister(
 			ms.NewGrpcServer(serveGrpcServices(client), grpcServicesPort),
 		).
+		Lazy(func() ms.Server {
+			return ms.NewHttpServer(serveGrpcui(grpcServicesPortNumber), grpcuiPort)
+		}).
 		EnableShutdownOnTerminateSignal().
 		ShutdownTimout(time.Second * 3)
 
