@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -15,6 +16,7 @@ import (
 	"github.com/ryota0624/go-dev-with-ent/ent"
 	"github.com/ryota0624/go-dev-with-ent/ent/ogent"
 	"github.com/ryota0624/go-dev-with-ent/ent/proto/entpb"
+	ms "github.com/ryota0624/multi-server"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/reflection"
@@ -46,52 +48,74 @@ func main() {
 		log.Fatal(err)
 	}
 
-	go func() {
-		go serveGrpcServices(client)
-		go serveGrpcui()
-	}()
-	log.Default().Println("start REST API server at 8080")
-	if err := http.ListenAndServe(":8080", srv); err != nil {
-		log.Fatal(err)
+	restApiPort, err := net.Listen("tcp", fmt.Sprintf(":%d", 8000))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
 	}
+
+	grpcServicesPortNumber := 5000
+	grpcServicesPort, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcServicesPortNumber))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	grpcuiPort, err := net.Listen("tcp", fmt.Sprintf(":%d", 5005))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+
+	servers := ms.NewServers().
+		Resister(
+			ms.NewHttpServer(serveGrpcui(grpcServicesPortNumber), grpcuiPort),
+		).
+		Resister(
+			ms.NewHttpServer(&http.Server{
+				Handler: srv,
+			}, restApiPort),
+		).
+		Resister(
+			ms.NewGrpcServer(serveGrpcServices(client), grpcServicesPort),
+		).
+		EnableShutdownOnTerminateSignal().
+		ShutdownTimout(time.Second * 3)
+
+	log.Println("start servers")
+
+	err = servers.Start(context.Background())
+	if err != nil {
+		log.Printf("occurred servers start err: %v\n", err)
+	}
+	log.Println("shutdown start")
+	servers.WaitShutdown()
 }
 
-func serveGrpcServices(client *ent.Client) {
+func serveGrpcServices(client *ent.Client) *grpc.Server {
 	svc := entpb.NewUserService(client)
 	server := grpc.NewServer()
 	entpb.RegisterUserServiceServer(server, svc)
 	reflection.Register(server)
-	lis, err := net.Listen("tcp", ":5000")
-	if err != nil {
-		log.Fatalf("failed listening: %s", err)
-	}
-	log.Default().Println("start grpc server at 5000")
-	if err := server.Serve(lis); err != nil {
-		log.Fatalf("server ended: %s", err)
-	}
+	return server
 }
 
-func serveGrpcui() {
+func serveGrpcui(grpcServicesPort int) *http.Server {
 	ctx := context.Background()
 	dialTime := 10 * time.Second
 	dialCtx, cancel := context.WithTimeout(ctx, dialTime)
 	defer cancel()
 
-	time.Sleep(time.Second * 1) // grpc serverの起動を待つ
+	grpcServicesAddr := fmt.Sprintf("127.0.0.1:%d", grpcServicesPort)
+	time.Sleep(time.Second * 3) // grpc serverの起動を待つ
 	var creds credentials.TransportCredentials
-	clientConn, err := grpcurl.BlockingDial(dialCtx, "tcp", "127.0.0.1:5000", creds)
+	clientConn, err := grpcurl.BlockingDial(dialCtx, "tcp", grpcServicesAddr, creds)
 	if err != nil {
 		log.Fatalf("Failed to dial target host : %+v", err)
 	}
 
-	handler, err := standalone.HandlerViaReflection(ctx, clientConn, "127.0.0.1:5000")
+	handler, err := standalone.HandlerViaReflection(ctx, clientConn, grpcServicesAddr)
 	if err != nil {
 		log.Fatalf("failed to HandlerViaReflection: %s", err)
 	}
 
-	log.Default().Println("start grpcui server at 5005")
-	err = http.ListenAndServe(":5005", handler)
-	if err != nil {
-		log.Fatalf("grpcui server ended: %s", err)
+	return &http.Server{
+		Handler: handler,
 	}
 }
