@@ -15,7 +15,7 @@ require (
 	github.com/hedwigz/entviz v0.0.0-20220529060928-44574cfd7a21
 	github.com/mattn/go-sqlite3 v1.14.13
 	github.com/ogen-go/ogen v0.18.1
-	github.com/ryota0624/multi-server v0.0.0-20220628012339-201c5a9e7245
+	github.com/ryota0624/multi-server v0.0.0-20220628013249-6759e0a655de
 	go.opentelemetry.io/otel v1.7.0
 	go.opentelemetry.io/otel/metric v0.27.0
 	go.opentelemetry.io/otel/trace v1.7.0
