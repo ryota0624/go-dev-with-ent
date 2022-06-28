@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"entgo.io/contrib/entgql"
 	"entgo.io/contrib/entoas"
 	"entgo.io/contrib/entproto"
 	"entgo.io/ent"
@@ -23,7 +24,7 @@ func (User) Fields() []ent.Field {
 			Default(uuid.New).
 			StorageKey("id").Annotations(entproto.Field(1)),
 		field.Int("age").
-			Positive().Annotations(entproto.Field(2)),
+			Positive().Annotations(entproto.Field(2)).Annotations(entgql.OrderField("AGE")),
 		field.String("name").
 			Default("unknown").Annotations(entproto.Field(3)),
 	}
@@ -32,9 +33,12 @@ func (User) Fields() []ent.Field {
 // Edges of the User.
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("cars", Car.Type).Annotations(entproto.Skip()),
+		edge.To("cars", Car.Type).
+			Annotations(entproto.Skip()).
+			Annotations(entgql.Bind(), entgql.RelayConnection()),
 		edge.From("groups", Group.Type).
-			Ref("users").Annotations(entproto.Skip()),
+			Ref("users").Annotations(entproto.Skip()).
+			Annotations(entgql.Bind()),
 	}
 }
 
@@ -46,5 +50,7 @@ func (User) Annotations() []schema.Annotation {
 		entoas.ReadOperation(entoas.OperationPolicy(entoas.PolicyExpose)),
 		entproto.Message(),
 		entproto.Service(),
+		entgql.RelayConnection(),
+		entgql.QueryField(),
 	}
 }

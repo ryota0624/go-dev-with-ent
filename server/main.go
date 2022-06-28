@@ -83,7 +83,7 @@ func main() {
 			ms.NewGrpcServer(serveGrpcServices(client), grpcServicesPort),
 		).
 		Resister(
-			ms.NewHttpServer(serveGraphql(), graphqlPort),
+			ms.NewHttpServer(serveGraphql(client), graphqlPort),
 		).
 		Lazy(func() ms.Server {
 			return ms.NewHttpServer(serveGrpcui(grpcServicesPortNumber), grpcuiPort)
@@ -133,8 +133,8 @@ func serveGrpcui(grpcServicesPort int) *http.Server {
 	}
 }
 
-func serveGraphql() *http.Server {
-	srv := gqlhandler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+func serveGraphql(client *ent.Client) *http.Server {
+	srv := gqlhandler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{Client: client}}))
 	mux := http.NewServeMux()
 	mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	mux.Handle("/query", srv)

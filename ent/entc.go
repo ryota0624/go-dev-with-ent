@@ -33,7 +33,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("creating ogent extension: %v", err)
 	}
-	gqlext, err := entgql.NewExtension()
+	gqlext, err := entgql.NewExtension(
+		entgql.WithConfigPath("../gqlgen.yml"),
+		entgql.WithSchemaGenerator(),
+		entgql.WithSchemaPath("./ent.graphql"),
+		entgql.WithWhereFilters(true),
+	)
 	if err != nil {
 		log.Fatalf("creating entgql extension: %v", err)
 	}
