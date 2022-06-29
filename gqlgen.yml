@@ -37,10 +37,6 @@ resolver:
 # if they match it will use them, otherwise it will generate them.
 autobind:
   - "github.com/ryota0624/go-dev-with-ent/ent"
-  - "github.com/ryota0624/go-dev-with-ent/ent/car"
-  - "github.com/ryota0624/go-dev-with-ent/ent/user"
-  - "github.com/ryota0624/go-dev-with-ent/ent/group"
-
 # This section declares type mapping between the GraphQL and go type systems
 #
 # The first line in each type will be used as defaults for resolver arguments and
