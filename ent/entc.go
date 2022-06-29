@@ -49,7 +49,7 @@ func main() {
 		Hooks: []gen.Hook{
 			entproto.Hook(),
 		},
-	}, entc.Extensions(entviz.Extension{}, ogent, oas, gqlext))
+	}, entc.Extensions(entviz.Extension{}, ogent, oas, gqlext), entc.FeatureNames("sql/versioned-migration"))
 	if err != nil {
 		log.Fatalf("running ent codegen: %v", err)
 	}
