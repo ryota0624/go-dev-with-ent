@@ -83,6 +83,14 @@ message ListUserResponse {
   string next_page_token = 2;
 }
 
+message BatchCreateUsersRequest {
+  repeated CreateUserRequest requests = 1;
+}
+
+message BatchCreateUsersResponse {
+  repeated User users = 1;
+}
+
 service UserService {
   rpc Create ( CreateUserRequest ) returns ( User );
 
@@ -93,4 +101,6 @@ service UserService {
   rpc Delete ( DeleteUserRequest ) returns ( google.protobuf.Empty );
 
   rpc List ( ListUserRequest ) returns ( ListUserResponse );
+
+  rpc BatchCreate ( BatchCreateUsersRequest ) returns ( BatchCreateUsersResponse );
 }

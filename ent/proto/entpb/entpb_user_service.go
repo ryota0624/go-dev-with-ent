@@ -211,3 +211,7 @@ func (svc *UserService) List(ctx context.Context, req *ListUserRequest) (*ListUs
 	}
 
 }
+
+// BatchCreate implements UserServiceServer.BatchCreate
+func (svc *UserService) BatchCreate(ctx context.Context, req *BatchCreateUsersRequest) (*BatchCreateUsersResponse, error) {
+}

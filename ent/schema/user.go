@@ -52,5 +52,6 @@ func (User) Annotations() []schema.Annotation {
 		entproto.Service(),
 		entgql.RelayConnection(),
 		entgql.QueryField(),
+		entgql.Mutations(),
 	}
 }
