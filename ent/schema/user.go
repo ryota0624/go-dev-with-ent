@@ -49,7 +49,7 @@ func (User) Annotations() []schema.Annotation {
 		entoas.UpdateOperation(entoas.OperationPolicy(entoas.PolicyExpose)),
 		entoas.ReadOperation(entoas.OperationPolicy(entoas.PolicyExpose)),
 		entproto.Message(),
-		entproto.Service(),
+		entproto.Service(entproto.Methods(entproto.MethodGet)),
 		entgql.RelayConnection(),
 		entgql.QueryField(),
 		entgql.Mutations(),

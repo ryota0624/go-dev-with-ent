@@ -35,10 +35,6 @@ message User {
   string name = 3;
 }
 
-message CreateUserRequest {
-  User user = 1;
-}
-
 message GetUserRequest {
   bytes id = 1;
 
@@ -53,54 +49,6 @@ message GetUserRequest {
   }
 }
 
-message UpdateUserRequest {
-  User user = 1;
-}
-
-message DeleteUserRequest {
-  bytes id = 1;
-}
-
-message ListUserRequest {
-  int32 page_size = 1;
-
-  string page_token = 2;
-
-  View view = 3;
-
-  enum View {
-    VIEW_UNSPECIFIED = 0;
-
-    BASIC = 1;
-
-    WITH_EDGE_IDS = 2;
-  }
-}
-
-message ListUserResponse {
-  repeated User user_list = 1;
-
-  string next_page_token = 2;
-}
-
-message BatchCreateUsersRequest {
-  repeated CreateUserRequest requests = 1;
-}
-
-message BatchCreateUsersResponse {
-  repeated User users = 1;
-}
-
 service UserService {
-  rpc Create ( CreateUserRequest ) returns ( User );
-
   rpc Get ( GetUserRequest ) returns ( User );
-
-  rpc Update ( UpdateUserRequest ) returns ( User );
-
-  rpc Delete ( DeleteUserRequest ) returns ( google.protobuf.Empty );
-
-  rpc List ( ListUserRequest ) returns ( ListUserResponse );
-
-  rpc BatchCreate ( BatchCreateUsersRequest ) returns ( BatchCreateUsersResponse );
 }
