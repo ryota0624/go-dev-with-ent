@@ -10,6 +10,7 @@ import (
 	_ "github.com/99designs/gqlgen"
 	_ "github.com/cosmtrek/air"
 	_ "github.com/golang-migrate/migrate/v4"
+	_ "github.com/google/pprof"
 	_ "github.com/hedwigz/entviz"
 	_ "google.golang.org/grpc/cmd/protoc-gen-go-grpc"
 	_ "google.golang.org/protobuf/cmd/protoc-gen-go"

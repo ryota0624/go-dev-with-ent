@@ -13,7 +13,7 @@ import (
 	"github.com/fullstorydev/grpcui/standalone"
 	"github.com/fullstorydev/grpcurl"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/pkg/profile"
+	"github.com/profefe/profefe/agent"
 	"github.com/ryota0624/go-dev-with-ent/ent"
 	"github.com/ryota0624/go-dev-with-ent/ent/ogent"
 	"github.com/ryota0624/go-dev-with-ent/ent/proto/entpb"
@@ -30,6 +30,8 @@ import (
 	_ "net/http/pprof"
 )
 
+const pffCollectorAddr = "http://profefe-collector:10100"
+
 type handler struct {
 	*ogent.OgentHandler
 	client *ent.Client
@@ -42,7 +44,26 @@ func (h *handler) Health(ctx context.Context) (ogent.HealthNoContent, error) {
 func main() {
 
 	// TODO: dd-trace-goでlocalに落とせないか試す。
-	defer profile.Start().Stop()
+	// defer profile.Start().Stop()
+
+	pffAgent, err := agent.Start(
+		pffCollectorAddr,
+		"go-app",
+		agent.WithCPUProfile(10*time.Second),
+		agent.WithHeapProfile(),
+		agent.WithBlockProfile(),
+		agent.WithMutexProfile(),
+		agent.WithGoroutineProfile(),
+		agent.WithThreadcreateProfile(),
+		agent.WithLogger(agentLogger),
+		agent.WithLabels(
+			"host", "localhost",
+		),
+	)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer pffAgent.Stop()
 
 	// Create ent client.
 	client, err := ent.Open(dialect.SQLite, "file:ent?mode=memory&cache=shared&_fk=1")
@@ -159,4 +180,8 @@ func serveGraphql(client *ent.Client) *http.Server {
 	return &http.Server{
 		Handler: mux,
 	}
+}
+
+func agentLogger(format string, v ...interface{}) {
+	log.Println(fmt.Sprintf(format, v...))
 }

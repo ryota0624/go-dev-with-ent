@@ -15,13 +15,14 @@ require (
 	github.com/go-faster/jx v0.38.0
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/golang/protobuf v1.5.2
+	github.com/google/pprof v0.0.0-20220608213341-c488b8fa1db3
 	github.com/google/uuid v1.3.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hedwigz/entviz v0.0.0-20220529060928-44574cfd7a21
 	github.com/lib/pq v1.10.6
 	github.com/mattn/go-sqlite3 v1.14.14
 	github.com/ogen-go/ogen v0.18.1
-	github.com/pkg/profile v1.6.0
+	github.com/profefe/profefe v0.0.0-20210412073930-18342f204d75
 	github.com/ryota0624/multi-server v0.0.0-20220628013249-6759e0a655de
 	github.com/vektah/gqlparser/v2 v2.4.5
 	github.com/vmihailenco/msgpack/v5 v5.3.5
@@ -37,6 +38,7 @@ require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/agnivade/levenshtein v1.1.1 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
+	github.com/chzyer/readline v1.5.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/creack/pty v1.1.11 // indirect
 	github.com/fatih/color v1.13.0 // indirect
@@ -50,6 +52,7 @@ require (
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/hashicorp/hcl/v2 v2.13.0 // indirect
+	github.com/ianlancetaylor/demangle v0.0.0-20220319035150-800ac71e25c2 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jhump/protoreflect v1.12.0 // indirect
@@ -82,4 +85,3 @@ require (
 	google.golang.org/genproto v0.0.0-20220628213854-d9e0b6570c03 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
-

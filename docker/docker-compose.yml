@@ -18,3 +18,11 @@ services:
     volumes:
       - ../:/go/src
     tty: true
+  profefe-collector:
+    image: profefe/profefe:latest
+    command:
+      - -addr=:10100
+      - -storage-type=badger
+      - -badger.dir=/data
+    ports:
+      - 10100:10100
