@@ -13,6 +13,7 @@ import (
 	"github.com/fullstorydev/grpcui/standalone"
 	"github.com/fullstorydev/grpcurl"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/pkg/profile"
 	"github.com/ryota0624/go-dev-with-ent/ent"
 	"github.com/ryota0624/go-dev-with-ent/ent/ogent"
 	"github.com/ryota0624/go-dev-with-ent/ent/proto/entpb"
@@ -25,6 +26,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/ryota0624/go-dev-with-ent/graph"
 	"github.com/ryota0624/go-dev-with-ent/graph/generated"
+
+	_ "net/http/pprof"
 )
 
 type handler struct {
@@ -37,6 +40,10 @@ func (h *handler) Health(ctx context.Context) (ogent.HealthNoContent, error) {
 }
 
 func main() {
+
+	// TODO: dd-trace-goでlocalに落とせないか試す。
+	defer profile.Start().Stop()
+
 	// Create ent client.
 	client, err := ent.Open(dialect.SQLite, "file:ent?mode=memory&cache=shared&_fk=1")
 	if err != nil {
@@ -73,11 +80,22 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
+	pprofPort, err := net.Listen("tcp", fmt.Sprintf(":%d", 6006))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+
 	servers := ms.NewServers().
 		Resister(
 			ms.NewHttpServer(&http.Server{
 				Handler: srv,
 			}, restApiPort),
+		).
+		Resister(
+			// runtime.SetBlockProfileRate(1)
+			ms.NewHttpServer(&http.Server{
+				Handler: http.DefaultServeMux,
+			}, pprofPort),
 		).
 		Resister(
 			ms.NewGrpcServer(serveGrpcServices(client), grpcServicesPort),
