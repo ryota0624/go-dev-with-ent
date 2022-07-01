@@ -14,6 +14,7 @@ import (
 	"github.com/fullstorydev/grpcurl"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/profefe/profefe/agent"
+	"github.com/pyroscope-io/client/pyroscope"
 	"github.com/ryota0624/go-dev-with-ent/ent"
 	"github.com/ryota0624/go-dev-with-ent/ent/ogent"
 	"github.com/ryota0624/go-dev-with-ent/ent/proto/entpb"
@@ -64,6 +65,24 @@ func main() {
 		log.Fatalln(err)
 	}
 	defer pffAgent.Stop()
+
+	pyroscope.Start(pyroscope.Config{
+		ApplicationName: "simple.golang.app",
+		ServerAddress:   "http://pyroscope-server:4040",
+		Logger:          pyroscope.StandardLogger,
+		ProfileTypes: []pyroscope.ProfileType{
+			pyroscope.ProfileCPU,
+			pyroscope.ProfileAllocObjects,
+			pyroscope.ProfileAllocSpace,
+			pyroscope.ProfileInuseObjects,
+			pyroscope.ProfileInuseSpace,
+			pyroscope.ProfileGoroutines,
+			pyroscope.ProfileMutexCount,
+			pyroscope.ProfileMutexDuration,
+			pyroscope.ProfileBlockCount,
+			pyroscope.ProfileBlockDuration,
+		},
+	})
 
 	// Create ent client.
 	client, err := ent.Open(dialect.SQLite, "file:ent?mode=memory&cache=shared&_fk=1")

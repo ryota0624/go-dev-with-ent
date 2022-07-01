@@ -84,4 +84,5 @@ require (
 	golang.org/x/tools v0.1.12-0.20220628192153-7743d1d949f1 // indirect
 	google.golang.org/genproto v0.0.0-20220628213854-d9e0b6570c03 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	github.com/pyroscope-io/client v0.3.0
 )
