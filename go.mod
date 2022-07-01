@@ -6,8 +6,9 @@ require (
 	ariga.io/atlas v0.4.3-0.20220628105110-16a8147950fe
 	ariga.io/ogent v0.0.0-20220429114145-44afadf72357
 	entgo.io/contrib v0.2.1-0.20220627185739-f28d6f6b40a9
-	entgo.io/ent v0.10.2-0.20220627115711-84b05c05cd19
+	entgo.io/ent v0.10.2-0.20220630165756-4a26cab7347a
 	github.com/99designs/gqlgen v0.17.10
+	github.com/cosmtrek/air v1.40.2
 	github.com/fullstorydev/grpcui v1.3.0
 	github.com/fullstorydev/grpcurl v1.8.6
 	github.com/go-faster/errors v0.6.1
@@ -20,6 +21,7 @@ require (
 	github.com/lib/pq v1.10.6
 	github.com/mattn/go-sqlite3 v1.14.14
 	github.com/ogen-go/ogen v0.18.1
+	github.com/pkg/profile v1.6.0
 	github.com/ryota0624/multi-server v0.0.0-20220628013249-6759e0a655de
 	github.com/vektah/gqlparser/v2 v2.4.5
 	github.com/vmihailenco/msgpack/v5 v5.3.5
@@ -36,6 +38,9 @@ require (
 	github.com/agnivade/levenshtein v1.1.1 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
+	github.com/creack/pty v1.1.11 // indirect
+	github.com/fatih/color v1.13.0 // indirect
+	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -45,14 +50,17 @@ require (
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/hashicorp/hcl/v2 v2.13.0 // indirect
+	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jhump/protoreflect v1.12.0 // indirect
 	github.com/matryer/moq v0.2.7 // indirect
+	github.com/mattn/go-colorable v0.1.12 // indirect
+	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
-	github.com/pkg/profile v1.6.0 // indirect
+	github.com/pelletier/go-toml v1.9.3 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
@@ -75,4 +83,3 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
-replace entgo.io/ent => ../ent

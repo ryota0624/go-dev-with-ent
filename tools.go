@@ -8,6 +8,7 @@ import (
 	_ "entgo.io/contrib/entproto/cmd/protoc-gen-entgrpc"
 	_ "entgo.io/ent/cmd/ent"
 	_ "github.com/99designs/gqlgen"
+	_ "github.com/cosmtrek/air"
 	_ "github.com/golang-migrate/migrate/v4"
 	_ "github.com/hedwigz/entviz"
 	_ "google.golang.org/grpc/cmd/protoc-gen-go-grpc"

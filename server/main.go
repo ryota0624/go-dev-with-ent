@@ -109,7 +109,7 @@ func main() {
 		EnableShutdownOnTerminateSignal().
 		ShutdownTimout(time.Second * 3)
 
-	log.Println("start servers")
+	log.Println("start servers!")
 
 	err = servers.Start(context.Background())
 	if err != nil {
