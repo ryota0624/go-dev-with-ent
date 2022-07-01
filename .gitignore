@@ -1,1 +1,5 @@
 /tmp
+/docker/minio/data/*
+/docker/minio/data/profefe/*
+!/docker/minio/data/profefe
+!/docker/minio/data/profefe/.gitkeep

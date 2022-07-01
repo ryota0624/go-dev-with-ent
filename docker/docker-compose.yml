@@ -20,10 +20,18 @@ services:
     tty: true
   profefe-collector:
     image: profefe/profefe:latest
+    environment:
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minioadmin123
+      - AWS_DEFAULT_REGION=us-east-1
     command:
       - -addr=:10100
-      - -storage-type=badger
-      - -badger.dir=/data
+      # - -storage-type=badger
+      # - -badger.dir=/data
+      - -s3.endpoint-url=http://minio:9000
+      - -s3.disable-ssl=true
+      - -storage-type=s3
+      - -s3.bucket=profefe
     ports:
       - 10100:10100
   pyroscope-server:
@@ -32,3 +40,18 @@ services:
       - "4040:4040"
     command:
       - "server"
+    environment:
+      - PYROSCOPE_CONFIG=/pyroscope/pyroscope-server.yml
+    volumes:
+      - ./pyroscope:/pyroscope
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address 0.0.0.0:34501
+    volumes:
+      - ./minio/data:/data    
+    ports:
+      - 19000:9000
+      - 34501:34501
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minioadmin123

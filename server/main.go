@@ -66,23 +66,27 @@ func main() {
 	}
 	defer pffAgent.Stop()
 
-	pyroscope.Start(pyroscope.Config{
-		ApplicationName: "simple.golang.app",
-		ServerAddress:   "http://pyroscope-server:4040",
-		Logger:          pyroscope.StandardLogger,
-		ProfileTypes: []pyroscope.ProfileType{
-			pyroscope.ProfileCPU,
-			pyroscope.ProfileAllocObjects,
-			pyroscope.ProfileAllocSpace,
-			pyroscope.ProfileInuseObjects,
-			pyroscope.ProfileInuseSpace,
-			pyroscope.ProfileGoroutines,
-			pyroscope.ProfileMutexCount,
-			pyroscope.ProfileMutexDuration,
-			pyroscope.ProfileBlockCount,
-			pyroscope.ProfileBlockDuration,
-		},
-	})
+	go func() {
+		if false {
+			pyroscope.Start(pyroscope.Config{
+				ApplicationName: "simple.golang.app",
+				ServerAddress:   "http://pyroscope-server:4040",
+				Logger:          pyroscope.StandardLogger,
+				ProfileTypes: []pyroscope.ProfileType{
+					pyroscope.ProfileCPU,
+					pyroscope.ProfileAllocObjects,
+					pyroscope.ProfileAllocSpace,
+					pyroscope.ProfileInuseObjects,
+					pyroscope.ProfileInuseSpace,
+					pyroscope.ProfileGoroutines,
+					pyroscope.ProfileMutexCount,
+					pyroscope.ProfileMutexDuration,
+					pyroscope.ProfileBlockCount,
+					pyroscope.ProfileBlockDuration,
+				},
+			})
+		}
+	}()
 
 	// Create ent client.
 	client, err := ent.Open(dialect.SQLite, "file:ent?mode=memory&cache=shared&_fk=1")
